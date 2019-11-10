@@ -40,7 +40,6 @@ if [[ $? -ne 0 ]]; then
     echo "fail - invalid exit code: " $0
     exit 5
 fi
-rm -r -f message.out
 
 cmp -s message.out ../src/test/acceptance/commit3-expected.out
 if [[ $? -ne 0 ]]; then
