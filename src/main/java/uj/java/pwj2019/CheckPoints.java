@@ -5,81 +5,79 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class CheckPoints {
-    private static void existingInitErr(){
-        if(gvtFile!=null){
+    static void existingInitErr(){
+        if(Files.exists(Paths.get("./gvt"))){
             System.out.println("Current directory is already initialized.");
             System.exit(10);
         }
     }
-    private static void successInit(){
+    static void successInit(){
         System.out.println("Current directory initialized successfully");
         //System.exit(0);
     }
-    private static void notExistingInitErr(){
-        if(gvtFile==null) {
+    static void notExistingInitErr(){
+        if(Files.exists(Paths.get("./gvt"))) {
             System.out.println("Current directory is not initialized. Please use \"init\" command to initialize.");
             System.exit(-2);
         }
     }
-    private static void missedAddFileNameArgErr(String fileName){
+    static void missedAddFileNameArgErr(String fileName){
         if(fileName==null){
             System.out.println("Please specify file to add.");
             System.exit(20);
         }
     }
-    private static void notExistingFileToAddErr(String fileName){
+    static void notExistingFileToAddErr(String fileName){
         Path filePath= Paths.get(fileName);
         if(!Files.exists(filePath)){
             System.out.println("File "+fileName+" not found.");
             System.exit(21);
         }
     }
-    private static void addedFileBefore(String fileName){
+    static void addedFileBefore(String fileName){
         Path filePath=Paths.get(fileName);
-        Integer versionNr=getGvtVersionNr();
-        System.out.println("./.gvt/" + versionNr + "/"+ fileName);
-        if(Files.exists(Paths.get("./.gvt/" + versionNr + "/"+ fileName))){
+        System.out.println("./.gvt/" + GvtCore.versionNr + "/"+ fileName);
+        if(Files.exists(Paths.get("./.gvt/" + GvtCore.versionNr + "/"+ fileName))){
             System.out.println("File "+fileName+" already added.");
             System.exit(0);
         }
     }
-    private static void notDefinedAddErr(String fileName, Exception e){
+    static void notDefinedAddErr(String fileName, Exception e){
         System.out.println("File"+fileName+"cannot be added, see ERR for details.");
         e.printStackTrace();
         System.exit(22);
     }
-    private static void successAdd(String fileName){
+    static void successAdd(String fileName){
         System.out.println("File"+fileName+"added successfully.");
         //System.exit(0);
     }
-    private static void missedDetachFileNameArgErr(String fileName){
+    static void missedDetachFileNameArgErr(String fileName){
         if(fileName==null){
             System.out.println("Please specify file to detach.");
             System.exit(30);
         }
     }
-    private static void notAddedFileToDetachErr(String fileName){
-        Integer versionNr=getGvtVersionNr();
-        Path filePath=Paths.get("./.gvt/"+versionNr+"/"+fileName);
+    static void notAddedFileToDetachErr(String fileName){
+        Path filePath=Paths.get("./.gvt/"+GvtCore.versionNr+"/"+fileName);
         if(!Files.exists(filePath)){
             System.out.println("File "+fileName+" is not added to gvt.");
             //System.exit();
         }
     }
-    private static void notDefinedDetachErr(String fileName, Exception e){
+    static void notDefinedDetachErr(String fileName, Exception e){
         System.out.println("File"+fileName+"cannot be detached, see ERR for details.");
         e.printStackTrace();
         System.exit(31);
     }
-    private static void successDetach(String fileName){
+    static void successDetach(String fileName){
         System.out.println("File"+fileName+"added successfully.");
         //System.exit(0);
     }
 
-    private static void incorrectVersionNrToCheckout(String version){
+    static void incorrectVersionNrToCheckout(String version){
         try{
             Integer checkoutVersion=Integer.parseInt(version);
-            if(checkoutVersion<0 || checkoutVersion>getGvtVersionNr()){
+            if(checkoutVersion<0 || checkoutVersion>GvtCore.versionNr){
                 System.out.println("Invalid version number: "+version);
                 System.exit(40);
             }
@@ -87,41 +85,40 @@ public class CheckPoints {
             System.exit(40);
         }
     }
-    private static void notDefinedCheckoutErr(String fileName, Exception e){
+    static void notDefinedCheckoutErr(String fileName, Exception e){
         e.printStackTrace();
     }
-    private static void successCheckout(Integer version){
+    static void successCheckout(Integer version){
         System.out.println("Version"+version+"checked out successfully.");
         //System.exit(0);
     }
 
-    private static void missedCommitFileNameArgErr(String fileName){
+    static void missedCommitFileNameArgErr(String fileName){
         if(fileName==null){
             System.out.println("Please specify file to commit.");
             System.exit(50);
         }
     }
-    private static void notAddedFileToCommitErr(String fileName){
-        Integer versionNr=getGvtVersionNr();
-        Path filePath=Paths.get("./.gvt/"+versionNr+"/"+fileName);
+    static void notAddedFileToCommitErr(String fileName){
+        Path filePath=Paths.get("./.gvt/"+GvtCore.versionNr+"/"+fileName);
         if(!Files.exists(filePath)){
             System.out.println("File "+fileName+" is not added to gvt.");
             //System.exit();
         }
     }
-    private static void notExistingFileToCommitErr(String fileName){
+    static void notExistingFileToCommitErr(String fileName){
         Path filePath=Paths.get(fileName);
         if(!Files.exists(filePath)){
             System.out.println("File"+fileName+"does not exist.");
             System.exit(51);
         }
     }
-    private static void notDefinedCommitErr(String fileName, Exception e){
+    static void notDefinedCommitErr(String fileName, Exception e){
         System.out.println("File"+fileName+"cannot be detached, see ERR for details.");
         e.printStackTrace();
         System.exit(-52);
     }
-    private static void successCommit(String fileName){
+    static void successCommit(String fileName){
         System.out.println("File "+fileName+" committed successfully.");
         //System.exit(0);
     }
