@@ -10,6 +10,44 @@ public class GvtCore {
     static String[] args;
     static Integer versionNr;
 
+    static void setInitialVariableValue(String[] args){
+        GvtCore.args=args;
+        try {
+            if(Files.exists(Paths.get("./.gvt/version.txt"))){
+                BufferedReader versionReader =new BufferedReader(new FileReader("./.gvt/version.txt"));
+                GvtCore.versionNr=Integer.parseInt(versionReader.readLine());
+            }else GvtCore.versionNr=-1;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void execute(){
+        switch (GvtCore.args[0]){
+            case "init":
+                Gvt.init();
+                break;
+            case "add":
+                Gvt.add();
+                break;
+            case "detach":
+                Gvt.detach();
+                break;
+            case "checkout":
+                Gvt.checkout();
+                break;
+            case "commit":
+                Gvt.commit();
+                break;
+            case "history":
+                Gvt.history();
+                break;
+            case "version":
+                Gvt.version();
+                break;
+        }
+    }
+
     static void copyDirectoryRec(File sourceLocation, File targetLocation) throws IOException {
 
         if (sourceLocation.isDirectory()) {
@@ -38,64 +76,28 @@ public class GvtCore {
         }
     }
 
-    static void copyOldCommit(){
-        File oldFile=new File("./.gvt/"+versionNr.toString());
-
-        versionNr++;
-        File newFile=new File("./.gvt/"+versionNr.toString());
-        newFile.mkdir();
-
-        try {
-            copyDirectoryRec(oldFile, newFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    static void makeCommitMessageTemplate(String fileName, String template){
+    static void createNewEmptyVersion(String message){
         try{
+            versionNr++;
             BufferedWriter versionWriter = new BufferedWriter(new FileWriter("./.gvt/version.txt"));
             versionWriter.write(versionNr.toString());
             versionWriter.close();
 
+            Files.createDirectory(Paths.get("./.gvt/"+versionNr));
             BufferedWriter messageWriter = new BufferedWriter(new FileWriter("./.gvt/"+versionNr.toString()+"/message.txt"));
-            messageWriter.write(template+" file: "+fileName+".\n");
+            messageWriter.write(message);
+            versionWriter.close();
 
             String addedCommand=(args.length>=3 ? args[2] : "");
             String addedMessage=(args.length>=4 ? args[3] : null);
 
             if(addedCommand.equals("-m") && addedMessage!=null)
                 messageWriter.write(addedMessage);
-            else
-                messageWriter.write(template+" file: "+fileName);
+            //else
+            //    messageWriter.write(message);
 
-            versionWriter.close();
             messageWriter.close();
         }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    static void addChanges(String fileName){
-        try {
-            Path notControlledFile= Paths.get("./"+fileName);
-            Path controlledFile=Paths.get("./.gvt/"+versionNr+"/"+fileName);
-            Files.copy(notControlledFile, controlledFile);
-
-            makeCommitMessageTemplate(fileName, "Added");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    static void detachFile(String fileName){
-        try {
-            Path controlledFile=Paths.get("./.gvt/"+versionNr+1+"/"+fileName);
-            Files.delete(controlledFile);
-
-
-            makeCommitMessageTemplate(fileName, "Detached");
-        } catch (IOException e) {
             e.printStackTrace();
         }
     }
