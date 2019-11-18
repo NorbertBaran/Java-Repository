@@ -1,8 +1,10 @@
 package uj.java.pwj2019;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 
 public class Gvt {
@@ -10,7 +12,8 @@ public class Gvt {
         CheckPoints.existingInitErr();
         try {
             Files.createDirectory(Paths.get("./.gvt"));
-            GvtCore.createNewEmptyVersion("GVT initialized.");
+            Files.createDirectory(Paths.get("./.gvt/"+(GvtCore.versionNr+1)));
+            GvtCore.updateVersion("GVT initialized.");
             CheckPoints.successInit();
         } catch (IOException e) {
             e.printStackTrace();
@@ -24,10 +27,12 @@ public class Gvt {
         CheckPoints.notExistingFileToAddErr(fileName);
         CheckPoints.addedFileBefore(fileName);
         try {
-            GvtCore.createNewEmptyVersion("Added file: "+fileName+".\n");
-            GvtCore.copyDirectoryRec(new File("./.gvt/"+(GvtCore.versionNr-1)+"/"), new File("./.gvt/"+GvtCore.versionNr+"/"));
+            Files.createDirectory(Paths.get("./.gvt/"+(GvtCore.versionNr+1)));
+            //GvtCore.updateVersion("Added file: "+fileName+".\n");
+            GvtCore.copyDirectoryRec(new File("./.gvt/"+GvtCore.versionNr+"/"), new File("./.gvt/"+(GvtCore.versionNr+1)+"/"));
             //Files.copy(Paths.get("./.gvt/"+(GvtCore.versionNr-1)+"/"), Paths.get("./.gvt/"+GvtCore.versionNr+"/"));
-            Files.copy(Paths.get("./"+fileName), Paths.get("./.gvt/"+GvtCore.versionNr+"/"+fileName));
+            Files.copy(Paths.get("./"+fileName), Paths.get("./.gvt/"+(GvtCore.versionNr+1)+"/"+fileName));
+            GvtCore.updateVersion("Added file: "+fileName+"\n");
             CheckPoints.successAdd(fileName);
         }catch (Exception e){
             CheckPoints.notDefinedAddErr(fileName, e);
@@ -40,10 +45,11 @@ public class Gvt {
         CheckPoints.missedDetachFileNameArgErr(fileName);
         CheckPoints.notAddedFileToDetachErr(fileName);
         try{
-            GvtCore.createNewEmptyVersion("Detached file: "+fileName+".\n");
-            GvtCore.copyDirectoryRec(new File("./.gvt/"+(GvtCore.versionNr-1)+"/"), new File("./.gvt/"+GvtCore.versionNr+"/"));
+            Files.createDirectory(Paths.get("./.gvt/"+(GvtCore.versionNr+1)));
+            GvtCore.copyDirectoryRec(new File("./.gvt/"+GvtCore.versionNr+"/"), new File("./.gvt/"+(GvtCore.versionNr+1)+"/"));
             //Files.copy(Paths.get("./.gvt/"+(GvtCore.versionNr-1)+"/"), Paths.get("./.gvt/"+GvtCore.versionNr+"/"));
-            Files.delete(Paths.get("./.gvt/"+GvtCore.versionNr+"/"+fileName));
+            Files.delete(Paths.get("./.gvt/"+(GvtCore.versionNr+1)+"/"+fileName));
+            GvtCore.updateVersion("Detached file: "+fileName+"\n");
             CheckPoints.successDetach(fileName);
         }catch (Exception e){
             CheckPoints.notDefinedDetachErr(fileName, e);
@@ -79,6 +85,9 @@ public class Gvt {
                     }
                 });
             }
+            BufferedWriter versionWriter = new BufferedWriter(new FileWriter("./.gvt/message.txt"));
+            versionWriter.write(checkoutVersion.toString());
+            versionWriter.close();
 
             CheckPoints.successCheckout(checkoutVersion);
         }catch (Exception e){
@@ -93,11 +102,12 @@ public class Gvt {
         CheckPoints.notAddedFileToCommitErr(fileName);
         CheckPoints.notExistingFileToCommitErr(fileName);
         try{
-            GvtCore.createNewEmptyVersion("Committed file: "+fileName+".\n");
-            GvtCore.copyDirectoryRec(new File("./.gvt/"+(GvtCore.versionNr-1)+"/"), new File("./.gvt/"+GvtCore.versionNr+"/"));
+            Files.createDirectory(Paths.get("./.gvt/"+(GvtCore.versionNr+1)));
+            GvtCore.copyDirectoryRec(new File("./.gvt/"+GvtCore.versionNr+"/"), new File("./.gvt/"+(GvtCore.versionNr+1)+"/"));
             //Files.copy(Paths.get("./.gvt/"+(GvtCore.versionNr-1)+"/"), Paths.get("./.gvt/"+GvtCore.versionNr+1+"/"));
-            Files.delete(Paths.get("./.gvt/"+GvtCore.versionNr+"/"+fileName));
-            Files.copy(Paths.get("./"+fileName), Paths.get("./.gvt/"+GvtCore.versionNr+"/"+fileName));
+            Files.delete(Paths.get("./.gvt/"+(GvtCore.versionNr+1)+"/"+fileName));
+            Files.copy(Paths.get("./"+fileName), Paths.get("./.gvt/"+(GvtCore.versionNr+1)+"/"+fileName));
+            GvtCore.updateVersion("Committed file: "+fileName+"\n");
             CheckPoints.successCommit(fileName);
         }catch (Exception e){
             CheckPoints.notDefinedCommitErr(fileName, e);
@@ -106,7 +116,7 @@ public class Gvt {
 
     static void history(){
         Integer versionNr=GvtCore.versionNr;
-        int lastN=(GvtCore.args.length>=2 ? Integer.parseInt(GvtCore.args[1]) : versionNr+1);
+        int lastN=(GvtCore.args.length>=3 ? Integer.parseInt(GvtCore.args[2]) : versionNr+1);
         try {
             for(int i=versionNr-lastN+1; i<=versionNr; i++){
                 BufferedReader messageReader = new BufferedReader(new FileReader("./.gvt/"+i+"/message.txt"));
@@ -121,8 +131,12 @@ public class Gvt {
         int version=(GvtCore.args.length>=2 ? Integer.parseInt(GvtCore.args[1]) : GvtCore.versionNr);
         try{
             System.out.println("Version: "+version);
-            Stream<String> stream = Files.lines(Paths.get("./.gvt/"+version+"/message.txt"));
-            stream.forEach(System.out::println);
+            //Stream<String> stream = Files.lines(Paths.get("./.gvt/"+version+"/message.txt"));
+            //stream.forEach(System.out::println);
+            var array = Files.lines(Paths.get("./.gvt/"+version+"/message.txt")).toArray();
+            for(int i=0; i<array.length-1; i++)
+                System.out.println(array[i]);
+            System.out.print(array[array.length-1]);
         }catch (Exception e){
             e.printStackTrace();
         }

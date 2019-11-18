@@ -6,17 +6,17 @@ import java.nio.file.Paths;
 
 public class CheckPoints {
     static void existingInitErr(){
-        if(Files.exists(Paths.get("./gvt"))){
+        if(Files.exists(Paths.get("./.gvt"))){
             System.out.println("Current directory is already initialized.");
             System.exit(10);
         }
     }
     static void successInit(){
-        System.out.println("Current directory initialized successfully");
+        System.out.println("Current directory initialized successfully.");
         //System.exit(0);
     }
     static void notExistingInitErr(){
-        if(Files.exists(Paths.get("./gvt"))) {
+        if(!Files.exists(Paths.get("./.gvt"))) {
             System.out.println("Current directory is not initialized. Please use \"init\" command to initialize.");
             System.exit(-2);
         }
@@ -36,7 +36,6 @@ public class CheckPoints {
     }
     static void addedFileBefore(String fileName){
         Path filePath=Paths.get(fileName);
-        System.out.println("./.gvt/" + GvtCore.versionNr + "/"+ fileName);
         if(Files.exists(Paths.get("./.gvt/" + GvtCore.versionNr + "/"+ fileName))){
             System.out.println("File "+fileName+" already added.");
             System.exit(0);
@@ -48,7 +47,7 @@ public class CheckPoints {
         System.exit(22);
     }
     static void successAdd(String fileName){
-        System.out.println("File"+fileName+"added successfully.");
+        System.out.println("File "+fileName+" added successfully.");
         //System.exit(0);
     }
     static void missedDetachFileNameArgErr(String fileName){

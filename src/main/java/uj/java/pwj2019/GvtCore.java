@@ -23,6 +23,10 @@ public class GvtCore {
     }
 
     static void execute(){
+        if(args.length==0){
+            System.out.println("Please specify command.");
+            System.exit(1);
+        }
         switch (GvtCore.args[0]){
             case "init":
                 Gvt.init();
@@ -45,6 +49,9 @@ public class GvtCore {
             case "version":
                 Gvt.version();
                 break;
+            default:
+                System.out.println("Unknown command "+args[0]+".");
+                System.exit(1);
         }
     }
 
@@ -76,14 +83,14 @@ public class GvtCore {
         }
     }
 
-    static void createNewEmptyVersion(String message){
+    static void updateVersion(String message){
         try{
             versionNr++;
             BufferedWriter versionWriter = new BufferedWriter(new FileWriter("./.gvt/version.txt"));
             versionWriter.write(versionNr.toString());
             versionWriter.close();
 
-            Files.createDirectory(Paths.get("./.gvt/"+versionNr));
+            //Files.createDirectory(Paths.get("./.gvt/"+versionNr));
             BufferedWriter messageWriter = new BufferedWriter(new FileWriter("./.gvt/"+versionNr.toString()+"/message.txt"));
             messageWriter.write(message);
             versionWriter.close();
