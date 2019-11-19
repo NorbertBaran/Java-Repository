@@ -57,19 +57,31 @@ public class CheckPoints {
         }
     }
     static void notAddedFileToDetachErr(String fileName){
-        Path filePath=Paths.get("./.gvt/"+GvtCore.versionNr+"/"+fileName);
-        if(!Files.exists(filePath)){
+        //Path filePath=Paths.get("./.gvt/"+GvtCore.setVersionNr+"/"+fileName);
+        if(!Files.exists(Paths.get("./.gvt/"+GvtCore.setVersionNr+"/"+fileName))){
             System.out.println("File "+fileName+" is not added to gvt.");
-            //System.exit();
+            //System.out.println();
+            //return;
+            System.exit(0);
         }
     }
+    /*static boolean notAddedFileToDetachErr(String fileName){
+        Path filePath=Paths.get("./.gvt/"+GvtCore.setVersionNr+"/"+fileName);
+        if(!Files.exists(filePath)){
+            //System.out.println("File "+fileName+" is not added to gvt.");
+            return true;
+            //System.exit(0);
+            //System.out.println("Test1");
+        }
+        return false;
+    }*/
     static void notDefinedDetachErr(String fileName, Exception e){
-        System.out.println("File"+fileName+"cannot be detached, see ERR for details.");
+        System.out.println("File "+fileName+" cannot be detached, see ERR for details.");
         e.printStackTrace();
         System.exit(31);
     }
     static void successDetach(String fileName){
-        System.out.println("File"+fileName+"added successfully.");
+        System.out.println("File "+fileName+" detached successfully.");
         //System.exit(0);
     }
 

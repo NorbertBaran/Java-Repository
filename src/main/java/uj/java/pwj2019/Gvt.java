@@ -28,9 +28,8 @@ public class Gvt {
         CheckPoints.addedFileBefore(fileName);
         try {
             Files.createDirectory(Paths.get("./.gvt/"+(GvtCore.versionNr+1)));
-            //GvtCore.updateVersion("Added file: "+fileName+".\n");
-            GvtCore.copyDirectoryRec(new File("./.gvt/"+GvtCore.versionNr+"/"), new File("./.gvt/"+(GvtCore.versionNr+1)+"/"));
-            //Files.copy(Paths.get("./.gvt/"+(GvtCore.versionNr-1)+"/"), Paths.get("./.gvt/"+GvtCore.versionNr+"/"));
+            GvtCore.copyDirectoryRec(new File("./.gvt/"+GvtCore.setVersionNr+"/"), new File("./.gvt/"+(GvtCore.versionNr+1)+"/"));
+            //GvtCore.copyDirectoryRec(new File("./.gvt/"+GvtCore.versionNr+"/"), new File("./.gvt/"+(GvtCore.versionNr+1)+"/"));
             Files.copy(Paths.get("./"+fileName), Paths.get("./.gvt/"+(GvtCore.versionNr+1)+"/"+fileName));
             GvtCore.updateVersion("Added file: "+fileName+"\n");
             CheckPoints.successAdd(fileName);
@@ -41,13 +40,13 @@ public class Gvt {
 
     static void detach(){
         CheckPoints.notExistingInitErr();
-        String fileName=(GvtCore.args.length>=2 ? GvtCore.args[1] : null);
+        final String fileName=(GvtCore.args.length>=2 ? new String(GvtCore.args[1].toString()) : null);
         CheckPoints.missedDetachFileNameArgErr(fileName);
         CheckPoints.notAddedFileToDetachErr(fileName);
         try{
             Files.createDirectory(Paths.get("./.gvt/"+(GvtCore.versionNr+1)));
-            GvtCore.copyDirectoryRec(new File("./.gvt/"+GvtCore.versionNr+"/"), new File("./.gvt/"+(GvtCore.versionNr+1)+"/"));
-            //Files.copy(Paths.get("./.gvt/"+(GvtCore.versionNr-1)+"/"), Paths.get("./.gvt/"+GvtCore.versionNr+"/"));
+            GvtCore.copyDirectoryRec(new File("./.gvt/"+GvtCore.setVersionNr+"/"), new File("./.gvt/"+(GvtCore.versionNr+1)+"/"));
+            //GvtCore.copyDirectoryRec(new File("./.gvt/"+GvtCore.versionNr+"/"), new File("./.gvt/"+(GvtCore.versionNr+1)+"/"));
             Files.delete(Paths.get("./.gvt/"+(GvtCore.versionNr+1)+"/"+fileName));
             GvtCore.updateVersion("Detached file: "+fileName+"\n");
             CheckPoints.successDetach(fileName);
@@ -74,13 +73,13 @@ public class Gvt {
                 Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        Files.delete(file);
+                        //Files.delete(file);
                         return FileVisitResult.CONTINUE;
                     }
 
                     @Override
                     public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                        Files.delete(dir);
+                        //Files.delete(dir);
                         return FileVisitResult.CONTINUE;
                     }
                 });
@@ -103,8 +102,8 @@ public class Gvt {
         CheckPoints.notExistingFileToCommitErr(fileName);
         try{
             Files.createDirectory(Paths.get("./.gvt/"+(GvtCore.versionNr+1)));
-            GvtCore.copyDirectoryRec(new File("./.gvt/"+GvtCore.versionNr+"/"), new File("./.gvt/"+(GvtCore.versionNr+1)+"/"));
-            //Files.copy(Paths.get("./.gvt/"+(GvtCore.versionNr-1)+"/"), Paths.get("./.gvt/"+GvtCore.versionNr+1+"/"));
+            GvtCore.copyDirectoryRec(new File("./.gvt/"+GvtCore.setVersionNr+"/"), new File("./.gvt/"+(GvtCore.versionNr+1)+"/"));
+            //GvtCore.copyDirectoryRec(new File("./.gvt/"+GvtCore.versionNr+"/"), new File("./.gvt/"+(GvtCore.versionNr+1)+"/"));
             Files.delete(Paths.get("./.gvt/"+(GvtCore.versionNr+1)+"/"+fileName));
             Files.copy(Paths.get("./"+fileName), Paths.get("./.gvt/"+(GvtCore.versionNr+1)+"/"+fileName));
             GvtCore.updateVersion("Committed file: "+fileName+"\n");

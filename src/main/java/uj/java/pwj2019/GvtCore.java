@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 public class GvtCore {
     static String[] args;
     static Integer versionNr;
+    static Integer setVersionNr;
 
     static void setInitialVariableValue(String[] args){
         GvtCore.args=args;
@@ -16,7 +17,12 @@ public class GvtCore {
             if(Files.exists(Paths.get("./.gvt/version.txt"))){
                 BufferedReader versionReader =new BufferedReader(new FileReader("./.gvt/version.txt"));
                 GvtCore.versionNr=Integer.parseInt(versionReader.readLine());
-            }else GvtCore.versionNr=-1;
+                BufferedReader checkVersionReader =new BufferedReader(new FileReader("./.gvt/setVersion.txt"));
+                GvtCore.setVersionNr =Integer.parseInt(checkVersionReader.readLine());
+            }else{
+                GvtCore.versionNr=-1;
+                GvtCore.versionNr=-1;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -86,9 +92,13 @@ public class GvtCore {
     static void updateVersion(String message){
         try{
             versionNr++;
+            setVersionNr=versionNr;
             BufferedWriter versionWriter = new BufferedWriter(new FileWriter("./.gvt/version.txt"));
             versionWriter.write(versionNr.toString());
             versionWriter.close();
+            BufferedWriter setVersionWriter = new BufferedWriter(new FileWriter("./.gvt/setVersion.txt"));
+            setVersionWriter.write(setVersionNr.toString());
+            setVersionWriter.close();
 
             //Files.createDirectory(Paths.get("./.gvt/"+versionNr));
             BufferedWriter messageWriter = new BufferedWriter(new FileWriter("./.gvt/"+versionNr.toString()+"/message.txt"));
